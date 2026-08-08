@@ -1,0 +1,34 @@
+services:
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: RideShare@123
+      MYSQL_DATABASE: RideShareConnect
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pRideShare@123"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  app:
+    build:
+      context: ./RideShare_Connect
+      dockerfile: Dockerfile
+    ports:
+      - "5062:8080"
+    environment:
+      ConnectionStrings__DefaultConnection: "Server=db;Port=3306;Database=RideShareConnect;Uid=root;Pwd=RideShare@123;SslMode=None;"
+      Authentication__Google__ClientId: ""
+      Authentication__Google__ClientSecret: ""
+      PaymentGateway__ApiKey: ""
+      PaymentGateway__SecretKey: ""
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  mysql_data:

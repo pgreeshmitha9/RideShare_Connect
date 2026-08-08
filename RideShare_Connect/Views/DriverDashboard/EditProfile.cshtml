@@ -1,0 +1,130 @@
+@model RideShare_Connect.ViewModels.EditDriverViewModel
+@{
+    ViewData["Title"] = "Edit Profile";
+}
+
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    @* Using the improved driver.css instead of separate file to ensure consistency *@
+    <link rel="stylesheet" href="~/css/driver.css" asp-append-version="true" />
+</head>
+<body>
+
+    <!-- Header & Navbar (Unchanged) -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand fs-4" href="/">
+                <i class="bi bi-car-front-fill me-2" style="color: var(--secondary-color);"></i>RideShare Connect
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Driver" asp-action="Driver">Driver Dashboard</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content with Sidebar -->
+    <main class="flex-grow-1 py-5">
+        <div class="container">
+            <div class="row">
+                <!-- Sidebar (Copied from Driver.cshtml) -->
+                <div class="col-lg-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">Driver Menu</h5>
+                            <div class="nav flex-column nav-pills">
+                                <a class="nav-link text-start" href="@Url.Action("Driver", "DriverDashboard")#v-pills-overview"><i class="bi bi-speedometer2 me-2"></i>Overview</a>
+                                <a class="nav-link active text-start" href="#"><i class="bi bi-person-badge-fill me-2"></i>Driver Profile</a>
+                                <a class="nav-link text-start" href="@Url.Action("Driver", "DriverDashboard")#v-pills-vehicles"><i class="bi bi-car-front-fill me-2"></i>My Vehicles</a>
+                                <a class="nav-link text-start" href="@Url.Action("Driver", "DriverDashboard")#v-pills-createdrides"><i class="bi bi-list-ul me-2"></i>Created Rides</a>
+                                <a class="nav-link text-start" href="@Url.Action("Driver", "DriverDashboard")#v-pills-acceptedrides"><i class="bi bi-check-circle-fill me-2"></i>Accepted Rides</a>
+                                <a class="nav-link text-start" href="@Url.Action("Driver", "DriverDashboard")#v-pills-activerides"><i class="bi bi-play-circle-fill me-2"></i>Active Rides</a>
+                                <a class="nav-link text-start" href="@Url.Action("Driver", "DriverDashboard")#v-pills-cancelledrides"><i class="bi bi-x-circle-fill me-2"></i>Cancelled Rides</a>
+                                <a class="nav-link text-start" href="@Url.Action("Driver", "DriverDashboard")#v-pills-totalrides"><i class="bi bi-collection me-2"></i>Total Rides</a>
+                                <a class="nav-link text-start" href="@Url.Action("Driver", "DriverDashboard")#v-pills-ratings"><i class="bi bi-star-fill me-2"></i>Ratings & Reviews</a>
+                                <div class="p-3 mt-4">
+                                    <a class="btn btn-primary w-100" asp-action="CreateRide">
+                                        <i class="bi bi-plus-circle-fill me-2"></i>Create a New Ride
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Form Area -->
+                <div class="col-lg-9">
+                    <div class="card">
+                        <div class="card-header text-center bg-transparent border-0 pt-4">
+                            <h2 class="mb-0">Edit Profile</h2>
+                        </div>
+                        <div class="card-body p-4 p-md-5">
+                            <form asp-action="EditProfile" method="post">
+                                <input type="hidden" asp-for="DriverId" />
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <label asp-for="FullName" class="form-label"></label>
+                                        <input asp-for="FullName" class="form-control" />
+                                        <span asp-validation-for="FullName" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label asp-for="Email" class="form-label"></label>
+                                        <input asp-for="Email" class="form-control" />
+                                        <span asp-validation-for="Email" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label asp-for="PhoneNumber" class="form-label"></label>
+                                        <input asp-for="PhoneNumber" class="form-control" />
+                                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label asp-for="DOB" class="form-label"></label>
+                                        <input asp-for="DOB" class="form-control" type="date" />
+                                        <span asp-validation-for="DOB" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label asp-for="LicenseNumber" class="form-label"></label>
+                                        <input asp-for="LicenseNumber" class="form-control" />
+                                        <span asp-validation-for="LicenseNumber" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label asp-for="DrivingExperienceYears" class="form-label"></label>
+                                        <input asp-for="DrivingExperienceYears" class="form-control" />
+                                        <span asp-validation-for="DrivingExperienceYears" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-12">
+                                        <label asp-for="BackgroundCheckStatus" class="form-label"></label>
+                                        <input asp-for="BackgroundCheckStatus" class="form-control" />
+                                        <span asp-validation-for="BackgroundCheckStatus" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-12 text-end mt-5">
+                                        <a asp-action="Driver" class="btn btn-secondary me-2">Cancel</a>
+                                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+    }
+
+</body>

@@ -1,0 +1,317 @@
+@model RideShare_Connect.ViewModels.FinanceViewModel
+@{
+    ViewData["Title"] = "Payment & Financial";
+}
+
+<head>
+    <link rel="stylesheet" href="~/css/finance.css" asp-append-version="true" />
+</head>
+
+<body>
+
+    <!-- Header & Navbar from Main Site -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand fs-4" href="#">
+                <i class="bi bi-car-front-fill me-2" style="color: var(--secondary-color);"></i>RideShare Connect
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="../../DriverDashboard/Driver">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Payments & Finance</a>
+                    </li>
+                </ul>
+                <div class="dropdown ms-lg-3">
+                    <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="@Model.Profile?.ProfilePicture" alt="Profile" width="32" height="32" class="rounded-circle me-2">
+                        <strong>@Model.Profile?.FullName</strong>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
+                        <li><a class="dropdown-item" href="../../DriverDashboard/EditProfile">Profile</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form asp-controller="DriverAccount" asp-action="Logout" method="post" class="d-inline">
+                                <button type="submit" class="dropdown-item">Sign out</button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content: Payments & Financial Management -->
+    <main class="flex-grow-1 py-5">
+        <div class="container">
+            <div class="row">
+                <!-- Left Sidebar Navigation -->
+                <div class="col-lg-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">Financials</h5>
+                            <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                                <button class="nav-link active text-start" id="v-pills-wallet-tab" data-bs-toggle="pill" data-bs-target="#v-pills-wallet" type="button" role="tab" aria-controls="v-pills-wallet" aria-selected="true"><i class="bi bi-pie-chart-fill me-2"></i>Financial Dashboard</button>
+                                <button class="nav-link text-start" id="v-pills-history-tab" data-bs-toggle="pill" data-bs-target="#v-pills-history" type="button" role="tab" aria-controls="v-pills-history" aria-selected="false"><i class="bi bi-clock-history me-2"></i>Transaction History</button>
+                                <button class="nav-link text-start" id="v-pills-reports-tab" data-bs-toggle="pill" data-bs-target="#v-pills-reports" type="button" role="tab" aria-controls="v-pills-reports" aria-selected="false"><i class="bi bi-exclamation-circle-fill me-2"></i>Reports & Complaints</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Content Area -->
+                <div class="col-lg-9">
+                    <div class="tab-content" id="v-pills-tabContent">
+                        <!-- Wallet & Financial Reports Dashboard Tab -->
+                        <div class="tab-pane fade show active" id="v-pills-wallet" role="tabpanel" aria-labelledby="v-pills-wallet-tab" tabindex="0">
+                            <h4 class="mb-4">Financial Reports Dashboard</h4>
+                            <div class="card wallet-card mb-4">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <p class="mb-0 fs-5">Wallet Balance</p>
+                                            <h2 id="wallet-balance" class="display-5 fw-bold mb-0">₹@Model.WalletBalance.ToString("F2")</h2>
+                                        </div>
+                                        <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#addMoneyModal"><i class="bi bi-plus-circle-fill me-2"></i>Add Money</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row g-4 mb-4">
+                                <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <p class="text-muted mb-1">Total Earning This Month</p>
+                                            <h3 class="fw-bold text-success">₹@Model.TotalSpentThisMonth.ToString("F2")</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title mb-3">Recent Transactions</h5>
+                <ul class="list-group list-group-flush">
+                    @if (Model.RecentTransactions.Any())
+                    {
+                        foreach (var txn in Model.RecentTransactions)
+                        {
+                            var isCredit = txn.TxnType?.ToLower() == "credit";
+                            var isSuccessful = txn.Status?.ToLower() == "successful";
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>@txn.TxnDate.ToString("yyyy-MM-dd")</span>
+                                @if (isSuccessful)
+                                {
+                                    <span class="@(isCredit ? "text-success" : "text-danger") fw-bold">
+                                         @txn.PaymentMethod @(isCredit ? "+" : "-")@Html.Raw("&#8377;")@txn.Amount.ToString("F2")
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="fw-bold">@txn.Status @(isCredit ? "+" : "-")@Html.Raw("&#8377;")@txn.Amount.ToString("F2")</span>
+                                }
+                            </li>
+                        }
+                    }
+                    else
+                    {
+                        <li class="list-group-item text-muted">No recent transactions.</li>
+                    }
+                </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Transaction History Tab -->
+                        <div class="tab-pane fade" id="v-pills-history" role="tabpanel" aria-labelledby="v-pills-history-tab" tabindex="0">
+                            <h4 class="mb-4">Full Transaction History</h4>
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Transaction ID</th>
+                            <th>Date</th>
+                            <th>Transction Status</th>
+                            <th>Amount</th>
+                            <th>Description</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.TransactionHistory.Any())
+                        {
+                            foreach (var txn in Model.TransactionHistory)
+                            {
+                                var isCredit = txn.TxnType?.ToLower() == "credit";
+                                var isSuccessful = txn.Status?.ToLower() == "successful";
+                                <tr>
+                                    <td>@txn.TransactionId</td>
+                                    <td>@txn.TxnDate.ToString("yyyy-MM-dd")</td>
+                                    <td>@(isSuccessful ? txn.TxnType : txn.Status)</td>
+                                    <td class="@(isSuccessful ? (isCredit ? "text-success" : "text-danger") : "")">
+                                        @if (isSuccessful)
+                                        {
+                                            @(isCredit ? "+" : "-")@Html.Raw("&#8377;")@txn.Amount.ToString("F2")
+                                        }
+                                        else
+                                        {
+                                            @(isCredit ? "+" : "-")@Html.Raw("&#8377;")@txn.Amount.ToString("F2")
+                                        }
+                                    </td>
+                                    <td>@txn.Description</td>
+                                    <td>
+                                        <a asp-action="TransactionDetails" asp-route-id="@txn.Id" class="btn btn-sm btn-outline-primary">View</a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">No transactions found.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Reports & Complaints Tab -->
+                        <div class="tab-pane fade" id="v-pills-reports" role="tabpanel" aria-labelledby="v-pills-reports-tab" tabindex="0">
+                            <h4 class="mb-4">Reports & Complaints</h4>
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Booking ID</th>
+                                                    <th>Passenger</th>
+                                                    <th>Reason</th>
+                                                    <th>Status</th>
+                                                    <th>Amount</th>
+                                                    <th>Date</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @if (Model.Refunds != null && Model.Refunds.Any())
+                                                {
+                                                    foreach (var refund in Model.Refunds)
+                                                    {
+                                                        <tr>
+                                                            <td>#@refund.Payment?.BookingId</td>
+                                                            <td>@refund.Payment?.User?.UserProfile?.FullName</td>
+                                                            <td>@refund.Reason</td>
+                                                            <td>
+                                                                <span class="badge @(refund.RefundStatus == "Completed" ? "bg-success" : (refund.RefundStatus == "Processing" ? "bg-warning" : "bg-secondary"))">
+                                                                    @refund.RefundStatus
+                                                                </span>
+                                                            </td>
+                                                            <td>@refund.Amount.ToString("C")</td>
+                                                            <td>@refund.ProcessedAt.ToString("yyyy-MM-dd")</td>
+                                                            <td>
+                                                                <a asp-action="RefundDetails" asp-route-id="@refund.Id" class="btn btn-sm btn-outline-primary">View</a>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <tr>
+                                                        <td colspan="7" class="text-center text-muted">No reports or complaints found.</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                       
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+    <!-- Footer removed as per user request -->
+
+
+    <!-- Add Money Modal -->
+    <div class="modal fade" id="addMoneyModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
+                <div class="modal-header bg-light border-0 pb-0">
+                    <h5 class="modal-title fw-bold">Add Money to Wallet</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form>
+                        <div class="mb-4">
+                            <label for="addAmount" class="form-label text-muted fw-medium small text-uppercase">Enter Amount</label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-white border-end-0 text-muted">₹</span>
+                                <input type="number" class="form-control border-start-0 ps-0 fw-bold" id="addAmount" placeholder="0.00" style="font-size: 1.5rem;">
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2 mb-4 overflow-auto pb-2">
+                             <button type="button" class="btn btn-outline-secondary rounded-pill px-3" onclick="document.getElementById('addAmount').value=100">₹100</button>
+                             <button type="button" class="btn btn-outline-secondary rounded-pill px-3" onclick="document.getElementById('addAmount').value=500">₹500</button>
+                             <button type="button" class="btn btn-outline-secondary rounded-pill px-3" onclick="document.getElementById('addAmount').value=1000">₹1000</button>
+                             <button type="button" class="btn btn-outline-secondary rounded-pill px-3" onclick="document.getElementById('addAmount').value=2000">₹2000</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-0 pt-0 pb-4 px-4">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" id="proceedPayBtn" class="btn btn-primary rounded-pill px-4 flex-grow-1">Proceed to Safe Pay</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Razorpay Checkout -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+        const userId = @Model.Profile?.UserId ?? 0;
+        const razorpayKey = '@ViewBag.RazorpayKey';
+        document.getElementById('proceedPayBtn').addEventListener('click', () => {
+            const amountInput = document.getElementById('addAmount');
+            const amount = parseFloat(amountInput.value);
+            if (!amount || amount <= 0) {
+                return;
+            }
+
+            const options = {
+                key: razorpayKey,
+                amount: Math.round(amount * 100), // convert to paise
+                currency: 'INR',
+                name: 'RideShare Connect',
+                description: 'Wallet top-up',
+                notes: { userId: userId.toString() },
+                handler: function (response) {
+                    alert('Payment successful: ' + response.razorpay_payment_id);
+                },
+                theme: {
+                    color: '#3399cc'
+                }
+            };
+
+            const rzp = new Razorpay(options);
+            rzp.open();
+        });
+    </script>
+</body>
+</html>

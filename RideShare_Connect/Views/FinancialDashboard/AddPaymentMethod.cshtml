@@ -1,0 +1,167 @@
+@model RideShare_Connect.Models.PaymentManagement.PaymentMethod
+@{
+    ViewData["Title"] = "Add Payment Method";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - RideShare Connect</title>
+    
+    <!-- CSS Links -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="~/css/finance.css" asp-append-version="true" />
+</head>
+<body>
+
+    <!-- Navbar (Kept as is, but styles come from finance.css) -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand fs-4" href="#">
+                <i class="bi bi-car-front-fill me-2" style="color: var(--secondary-color);"></i>RideShare Connect
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                <ul class="navbar-nav ms-auto">
+                     <li class="nav-item">
+                        <a class="nav-link" asp-controller="UserDashboard" asp-action="User">Dashboard</a>
+                    </li>
+                     <li class="nav-item">
+                        <a class="nav-link active" asp-controller="FinancialDashboard" asp-action="Finance">Payments & Finance</a>
+                    </li>
+                </ul>
+                <div class="dropdown ms-lg-3">
+                    <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="@(ViewBag.UserProfile?.ProfilePicture)" alt="Profile" width="32" height="32" class="rounded-circle me-2">
+                        <strong>@(ViewBag.UserProfile?.FullName ?? "User")</strong>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end text-small shadow" aria-labelledby="dropdownUser1">
+                        <li><a class="dropdown-item" href="#">Profile</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                             <form asp-controller="UserAccount" asp-action="Logout" method="post" class="d-inline">
+                                 <button type="submit" class="dropdown-item">Sign out</button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow-1 py-5">
+        <div class="container">
+            <div class="row g-4">
+                <!-- Left Sidebar Navigation -->
+                <div class="col-lg-3">
+                    <div class="card h-100 sidebar-card sticky-top" style="top: 100px; z-index: 1;">
+                        <div class="card-body p-4">
+                            <h6 class="text-uppercase text-muted fw-bold mb-4 small ls-1">Financial Menu</h6>
+                            <div class="nav flex-column nav-pills">
+                                <a href="@Url.Action("Finance", "FinancialDashboard")" class="nav-link text-start"><i class="bi bi-pie-chart-fill me-3"></i>Overview</a>
+                                <a href="@Url.Action("Finance", "FinancialDashboard")" class="nav-link active text-start"><i class="bi bi-credit-card-2-front-fill me-3"></i>Cards & Methods</a>
+                                <a href="@Url.Action("Finance", "FinancialDashboard")" class="nav-link text-start"><i class="bi bi-clock-history me-3"></i>Transactions</a>
+                                <a href="@Url.Action("Finance", "FinancialDashboard")" class="nav-link text-start"><i class="bi bi-arrow-counterclockwise me-3"></i>Refunds</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Content Area -->
+                <div class="col-lg-9">
+                    <div class="card border-0 shadow-sm" style="overflow: visible;">
+                        <div class="card-header bg-transparent border-0 pt-4 px-4 pb-0">
+                             <div class="d-flex justify-content-between align-items-center">
+                                <h4 class="mb-0 fw-bold"><i class="bi bi-credit-card-2-front me-2 text-primary"></i>Add Payment Method</h4>
+                                <a asp-action="Finance" class="btn btn-sm btn-outline-secondary rounded-pill px-3"><i class="bi bi-x-lg"></i></a>
+                             </div>
+                             <p class="text-muted small mt-2">
+                                <i class="bi bi-shield-lock-fill text-success me-1"></i>
+                                Your payment information is securely handled by our PCI-compliant payment partner.
+                            </p>
+                        </div>
+                        <div class="card-body p-4">
+                            <form asp-action="AddPaymentMethod" method="post">
+                                @Html.AntiForgeryToken()
+                                
+                                <div class="row g-4">
+                                    <div class="col-12">
+                                        <div class="form-floating">
+                                            <select asp-for="CardType" class="form-select border-0 bg-light">
+                                                <option value="Credit Card">Credit Card</option>
+                                                <option value="Debit Card">Debit Card</option>
+                                            </select>
+                                            <label asp-for="CardType">Card Type</label>
+                                        </div>
+                                        <span asp-validation-for="CardType" class="text-danger small"></span>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <div class="form-floating">
+                                            <input asp-for="CardholderName" class="form-control border-0 bg-light" placeholder="Name on card" />
+                                            <label asp-for="CardholderName">Cardholder Name</label>
+                                        </div>
+                                        <span asp-validation-for="CardholderName" class="text-danger small"></span>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <div class="form-floating position-relative">
+                                            <input asp-for="CardNumber" class="form-control border-0 bg-light" placeholder="16-digit card number" maxlength="16" style="font-family: monospace; letter-spacing: 2px;" />
+                                            <label asp-for="CardNumber">Card Number</label>
+                                            <i class="bi bi-credit-card position-absolute top-50 end-0 translate-middle-y me-3 text-muted fs-5"></i>
+                                        </div>
+                                        <span asp-validation-for="CardNumber" class="text-danger small"></span>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input asp-for="ExpiryDate" class="form-control border-0 bg-light" placeholder="MM/YYYY" maxlength="7" />
+                                            <label asp-for="ExpiryDate">Expiry Date (MM/YYYY)</label>
+                                        </div>
+                                        <span asp-validation-for="ExpiryDate" class="text-danger small"></span>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input asp-for="CVV" class="form-control border-0 bg-light" type="password" placeholder="3-4 digits" maxlength="4" />
+                                            <label asp-for="CVV">CVV</label>
+                                        </div>
+                                        <span asp-validation-for="CVV" class="text-danger small"></span>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-end gap-3 mt-5">
+                                    <a asp-action="Finance" class="btn btn-light rounded-pill px-4">Cancel</a>
+                                    <button type="submit" class="btn btn-primary rounded-pill px-5 shadow-sm">
+                                        Save Card
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer Removed -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+    }
+</body>
+</html>
